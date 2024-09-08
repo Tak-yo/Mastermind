@@ -65,6 +65,16 @@ def initGame():
     pygame.draw.rect(screen, [0,0,0], [xrect, yrect,left, right], 1)
 
 #checks player"s code against answer
+def compareCode(guess,code):
+    red = 0
+    white = 0
+    for x,y in zip(guess,code):
+        if x==y:
+            red += 1
+    #white pegs
+    whitePegs = [x for x in code if x in guess]
+    white = len(whitePegs) - red
+    return red,white 
 
 def check():
     global yrect
@@ -73,32 +83,16 @@ def check():
     global code
     global y_cir
     global xrect
-    checkCursor = 3
+    global playerPosition
     stats = []
     r_pegs = 0
     
-    colors = []
-    colors.extend(code)
+    masterCode = []
+    masterCode.extend(code)
 
-    for i in range(4):
-        if colors[checkCursor] == playerCode[checkCursor]:
-            stats.append("True")
-            r_pegs += 1
-            del colors[checkCursor]
-            del playerCode[checkCursor]
-        else:
-            stats.append("False")
-        checkCursor -= 1
-    w_pegs = 0
-    index = len(playerCode)-1
-    for i in range(4):
-        if stats[index] == "False":
-            if playerCode[index] in colors:
-                w_pegs= w_pegs + 1
-        index -= 1
-    x_cir = 50
-
+    r_pegs,w_pegs = compareCode(playerCode,masterCode)
     
+    x_cir = 50
     if r_pegs == 0 and w_pegs == 0:
         pygame.draw.rect(screen, red, [25, y_cir- 3, 200, 5], 0)
     for i in range(r_pegs):
@@ -119,7 +113,7 @@ def check():
     elif yrect == -76 and r_pegs != 4:
         joined_code = " ".join(code)
         easygui.msgbox("You Lose!")
-        easygui.msgbox("The code was: ""+ joined_code  +"".")
+        easygui.msgbox("The code was: "+ joined_code  + ".")
         pygame.quit()
 
 # reset player guess and code checking
@@ -131,7 +125,11 @@ def check():
         pygame.draw.rect(screen, bgColor, [xrect, yrect, 70, 70],1)
         yrect = yrect - 100
         y_cir = y_cir - 100
+        xrect = 288
+        playerPosition = 0
         pygame.draw.rect(screen, black, [xrect, yrect, 70, 70],1)
+
+    return (r_pegs,w_pegs)
 
 #Set the color of selected pin
 def setColor(color):
@@ -139,7 +137,6 @@ def setColor(color):
     pygame.draw.circle(screen, color, [xrect+35, yrect+36], 30, 0)
     playerCode[playerPosition] = str(color)
     pygame.display.flip()
-    print(playerCode)
 
 def moveCursor(direction):
     global xrect
@@ -156,8 +153,8 @@ def moveCursor(direction):
         pygame.draw.rect(screen, black, [xrect, yrect,left, right], 1)
     pygame.display.flip()
 
-#defines "game"
-def runGame():
+#defines "manual control"
+def runManual():
     global yrect
     global y_cir
     global xrect
