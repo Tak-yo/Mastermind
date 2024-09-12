@@ -70,22 +70,22 @@ def maxInfo():
 
 def minScore(code):
     distr = scoreDist(code)
-    minVal = np.inf
+    maxVal = 0
     for row in distr:
         for score in row:
-            if (score<minVal and score>0):
-                minVal = score
-    return code, minVal
+            if (score>maxVal):
+                maxVal = score
+    return code, maxVal
 
 def minimax():
     global guessables,answers
     bestGuess = ''
-    bestGuessValue = 0
+    bestGuessValue = np.inf
     for guess in guessables:
-        if (minScore(guess)[1]>bestGuessValue):
+        if (minScore(guess)[1]<bestGuessValue):
             bestGuess = minScore(guess)[0]
             bestGuessValue = minScore(guess)[1]
-    print(bestGuessValue)
+            
     return bestGuess   
     
 def playTurn(guess):
@@ -110,9 +110,7 @@ def playTurn(guess):
 
         
         # Apply minimax technique to choose your next guess that would eliminate most possible solutions
-        
-        nextGuess = minimax()
-        print (nextGuess)
+        nextGuess = minimax()       
         turns += 1
         playTurn(nextGuess)
     elif (score == (4,0)):
